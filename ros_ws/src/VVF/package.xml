@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>VVF</name> <!-- (works, but consider renaming to lowercase later) -->
+  <version>0.0.1</version>
+  <description>Custom Jackal + Kinova Gen3 Lite + Velodyne VLP-16</description>
+
+  <maintainer email="noetic_user@todo.todo">noetic_user</maintainer>
+  <license>BSD</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <!-- Core deps -->
+  <depend>geometry_msgs</depend>
+  <depend>roscpp</depend>
+  <depend>rospy</depend>
+  <depend>std_msgs</depend>
+  <depend>tf2_ros</depend>
+
+  <!-- Stuff you call in find_package(...) and/or use at runtime -->
+  <depend>xacro</depend>
+  <depend>robot_state_publisher</depend>
+  <depend>joint_state_publisher</depend>
+  <depend>gazebo_ros</depend>
+  <depend>controller_manager</depend>
+
+  <!-- Models/URDFs included -->
+  <depend>jackal_description</depend>
+  <depend>jackal_control</depend>
+  <depend>kortex_description</depend>
+  <depend>velodyne_description</depend>
+  <depend>velodyne_gazebo_plugins</depend>
+
+  <!-- Optional -->
+  <depend>rviz</depend>
+
+  <export/>
+</package>

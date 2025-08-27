@@ -1,0 +1,35 @@
+<?xml version="1.0" ?>
+<sdf version="1.6">
+  <model name="moving_cylinder">
+    <link name="link">
+      <visual name="visual">
+        <geometry>
+          <cylinder>
+            <radius>0.1</radius>
+            <length>1.0</length>
+          </cylinder>
+        </geometry>
+        <material>
+          <ambient>0.0 0.5 1.0 1.0</ambient>
+        </material>
+      </visual>
+      <collision name="collision">
+        <geometry>
+          <cylinder>
+            <radius>0.1</radius>
+            <length>1.0</length>
+          </cylinder>
+        </geometry>
+      </collision>
+      <inertial>
+        <mass>1.0</mass>
+        <inertia>
+          <ixx>0.002</ixx>
+          <iyy>0.002</iyy>
+          <izz>0.002</izz>
+        </inertia>
+      </inertial>
+    </link>
+    <pose>2 0.5 0.5 0 0 0</pose>
+  </model>
+</sdf>

@@ -1,0 +1,40 @@
+<!-- Example roslaunch your_package moving_obstacle.launch type:=cylinder velocity:=0.4-->
+<!-- cylinder x=0.6 z=0.6 , hand x=0.8 z=0.6 -->
+
+<launch>
+  <!-- User-selectable object type -->
+  <arg name="type" default="hand" />
+
+  <!-- Common arguments -->
+  <arg name="model_name" default="moving_object"/>
+  <arg name="x" default="0.6"/>
+  <arg name="start_y" default="2.0"/>
+  <arg name="end_y" default="-2.0"/>
+  <arg name="z" default="0.6"/>
+  <arg name="velocity" default="0.22"/>
+  <arg name="update_rate" default="50"/>
+
+  <!-- Predefine SDF file paths -->
+  <arg name="sdf_hand" default="$(find jackal_gen3_lite_moveit_config)/vvf_6/dynamic_obstacles/hand_object/hand_object.sdf"/>
+  <arg name="sdf_sphere" default="$(find jackal_gen3_lite_moveit_config)/vvf_6/dynamic_obstacles/moving_sphere.sdf"/>
+  <arg name="sdf_cylinder" default="$(find jackal_gen3_lite_moveit_config)/vvf_6/dynamic_obstacles/moving_cylinder.sdf"/>
+
+  <!-- Set sdf_path based on type -->
+  <arg name="sdf_path" default="$(eval {'hand': arg('sdf_hand'), 'sphere': arg('sdf_sphere'), 'cylinder': arg('sdf_cylinder')}[arg('type')])"/>
+
+  <!-- Spawn the obstacle -->
+  <node pkg="gazebo_ros" type="spawn_model" name="spawn_dynamic_obstacle" output="screen"
+        args="-file $(arg sdf_path) -sdf -model $(arg model_name) -x $(arg x) -y $(arg start_y) -z $(arg z)" />
+
+  <!-- Launch the movement controller -->
+  <node pkg="jackal_gen3_lite_moveit_config" type="dynamic_obstacle.py" name="dynamic_obstacle_controller" output="screen">
+    <param name="type" value="$(arg type)"/>
+    <param name="model_name" value="$(arg model_name)" />
+    <param name="start_y" value="$(arg start_y)"/>
+    <param name="end_y" value="$(arg end_y)"/>
+    <param name="x" value="$(arg x)"/>
+    <param name="z" value="$(arg z)"/>
+    <param name="velocity" value="$(arg velocity)"/>
+    <param name="update_rate" value="$(arg update_rate)"/>
+  </node>
+</launch>
