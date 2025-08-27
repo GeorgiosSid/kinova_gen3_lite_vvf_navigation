@@ -13,7 +13,7 @@ from std_msgs.msg import Header
 from visualization_msgs.msg import Marker, MarkerArray
 from geometry_msgs.msg import Point
 
-from NewObstaclesManager.obstacle import Obstacle
+from ObstaclesManager.obstacle import Obstacle
 
 
 class ObstaclesProcessor:

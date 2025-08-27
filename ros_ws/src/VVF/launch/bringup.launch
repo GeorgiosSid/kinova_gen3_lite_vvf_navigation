@@ -1,65 +1,74 @@
 <?xml version="1.0"?>
 <launch>
-    <!-- Argument for the world file -->
-    <arg name="use_sim_time" default="true" />
-    <arg name="gui" default="true" />
-    <arg name="headless" default="false" />
-    <arg name="prefix" default="kinova_arm_"/>
-    <arg name="cyclic_data_publish_rate" default="40"/> <!--Hz-->
-    <arg name="world_file" default="$(find VVF)/worlds/one_cylinder.world"/>
-    <arg name="front_laser" default="false" />
-    <arg name="default_config" value="front_laser" if="$(arg front_laser)" />
-    <arg name="default_config" value="base" unless="$(arg front_laser)" />
-    <!-- end of hack -->
-    <!-- Configuration of Jackal which you would like to simulate.
-         See jackal_description for details. -->
-    <arg name="config" default="$(arg default_config)" />
+  <!-- General sim args -->
+  <arg name="use_sim_time" default="true"/>
+  <arg name="gui" default="true"/>
+  <arg name="headless" default="false"/>
 
-    <!-- Optionally enable teleop for the simulation -->
-    <arg name="joystick" default="true" />
+  <!-- Jackal config -->
+  <arg name="front_laser" default="false"/>
+  <arg name="default_config" value="front_laser" if="$(arg front_laser)"/>
+  <arg name="default_config" value="base" unless="$(arg front_laser)"/>
+  <arg name="config" default="$(arg default_config)"/>
 
-    <!-- Launch Gazebo with the specified world -->
-    <include file="$(find gazebo_ros)/launch/empty_world.launch">
-        <arg name="debug" value="0" />
-        <arg name="gui" value="$(arg gui)" />
-        <arg name="use_sim_time" value="$(arg use_sim_time)" />
-        <arg name="headless" value="$(arg headless)"/>
-        <arg name="world_name" value="$(arg world_file)" />
-    </include>
+  <!-- Kinova / controllers -->
+  <arg name="prefix" default="kinova_arm_"/>
+  <arg name="cyclic_data_publish_rate" default="40"/>
 
-  <arg name="env_runner" value="$(eval 'env_run' if not optenv('OS', 'unknown').lower().startswith('windows') else 'env_run.bat')" />
+  <!-- ===== World selection =====
+       Use: world:=one_cylinder | two_obstacles | two_spheres | empty
+       Or pass an absolute path in world:=/abs/path/to/world.world
+  -->
+  <arg name="world" default="empty" doc="empty|one_cylinder|two_obstacles|two_spheres|/abs/path.world"/>
 
+  <!-- Compute the world file once -->
+  <arg name="world_file"
+       default="$(eval {
+         'empty':        find('gazebo_ros') + '/worlds/empty.world',
+         'one_cylinder': find('VVF') + '/worlds/one_cylinder.world',
+         'two_obstacles':find('VVF') + '/worlds/two_obstacles.world',
+         'two_spheres':  find('VVF') + '/worlds/two_spheres.world'
+       }.get(arg('world'), arg('world')) )"/>
 
+  <!-- Gazebo -->
+  <include file="$(find gazebo_ros)/launch/empty_world.launch">
+    <arg name="debug" value="0"/>
+    <arg name="gui" value="$(arg gui)"/>
+    <arg name="use_sim_time" value="$(arg use_sim_time)"/>
+    <arg name="headless" value="$(arg headless)"/>
+    <arg name="world_name" value="$(arg world_file)"/>
+  </include>
 
+  <!-- env runner for xacro on non-Windows -->
+  <arg name="env_runner" value="$(eval 'env_run' if not optenv('OS','unknown').lower().startswith('windows') else 'env_run.bat')"/>
 
+  <!-- Build robot_description -->
   <param name="robot_description"
          command="$(find jackal_description)/scripts/$(arg env_runner)
-                    $(find jackal_description)/urdf/configs/$(arg config)
-                    $(find xacro)/xacro $(find VVF)/urdf/jackal.urdf.xacro
-                    --inorder" />
+                  $(find jackal_description)/urdf/configs/$(arg config)
+                  $(find xacro)/xacro $(find VVF)/urdf/jackal.urdf.xacro --inorder"/>
 
+  <!-- Jackal control -->
+  <include file="$(find jackal_control)/launch/control.launch"/>
 
+  <!-- Your velocity controllers -->
+  <rosparam file="$(find VVF)/config/joint_velocity_controllers.yaml"
+            command="load" subst_value="true"/>
 
- <include file="$(find jackal_control)/launch/control.launch" />
+  <!-- Spawn robot -->
+  <node name="urdf_spawner" pkg="gazebo_ros" type="spawn_model"
+        args="-urdf -model jackal -param robot_description -x 0 -y 0 -z 1 -R 0 -P 0 -Y 0"/>
 
-<rosparam file="$(find VVF)/config/joint_velocity_controllers.yaml" command="load" subst_value="true"/>
+  <!-- Start controller_manager spawners for the arm -->
+  <node name="velocity_controllers_spawner" pkg="controller_manager" type="spawner" args="
+        kinova_arm_joint_1_velocity_controller
+        kinova_arm_joint_2_velocity_controller
+        kinova_arm_joint_3_velocity_controller
+        kinova_arm_joint_4_velocity_controller
+        kinova_arm_joint_5_velocity_controller
+        kinova_arm_joint_6_velocity_controller
+  "/>
 
- <!-- Spawn Jackal -->
- <node name="urdf_spawner" pkg="gazebo_ros" type="spawn_model"
-     args="-urdf -model jackal -param robot_description -x 0 -y 0 -z 1 -R 0 -P 0 -Y 0" />
-
-        <node name="velocity_controllers_spawner" pkg="controller_manager" type="spawner" args="
-    kinova_arm_joint_1_velocity_controller
-    kinova_arm_joint_2_velocity_controller
-    kinova_arm_joint_3_velocity_controller
-    kinova_arm_joint_4_velocity_controller
-    kinova_arm_joint_5_velocity_controller
-    kinova_arm_joint_6_velocity_controller
-"/>
-
-
-<!-- Start robot state publisher -->
-        <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher"
-        respawn="false" output="screen" />
-
+  <!-- TF publisher -->
+  <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" output="screen"/>
 </launch>

@@ -1,9 +1,9 @@
-from NewObstaclesManager.kalman_filter import KalmanFilter
+from ObstaclesManager.kalman_filter import KalmanFilter
 import numpy as np
 from sklearn.decomposition import PCA
 from scipy.optimize import minimize
 import rospy
-from NewObstaclesManager.geometry_algorithms import *
+from ObstaclesManager.geometry_algorithms import *
 
 
 class Obstacle:
