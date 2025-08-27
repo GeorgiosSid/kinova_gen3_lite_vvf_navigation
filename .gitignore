@@ -3,5 +3,8 @@ ros_ws/devel/
 ros_ws/install/
 ros_ws/logs/
 ros_ws/.catkin_tools/
+
+ros_ws/src/ros_kortex
+
 *.pyc
 .DS_Store
