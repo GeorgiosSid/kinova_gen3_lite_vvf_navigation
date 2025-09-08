@@ -1,5 +1,5 @@
 import sympy as sp
-from FK import forward_kinematics_symbolic
+from Kinematics.FK import forward_kinematics_symbolic
 import rospy  # For logging in a ROS environment
 
 class JacobianCalculator:

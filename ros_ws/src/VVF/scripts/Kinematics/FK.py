@@ -1,8 +1,8 @@
-from TransformationMatrices import*
+from Kinematics.TransformationMatrices import*
 import numpy as np
 from scipy.spatial.transform import Rotation as R
 import sympy as sp
-from constants import *
+from Kinematics.constants import *
 
 def forward_kinematics(joints):
     """

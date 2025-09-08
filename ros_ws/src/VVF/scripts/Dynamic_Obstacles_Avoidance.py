@@ -232,27 +232,6 @@ class DynamicObstacleAvoidance:
         distances = np.linalg.norm(dynamic_obstacle.points - self.goal_position, axis=1)
         return np.min(distances) < threshold
 
-    """
-    def cap_joint_acceleration(self, q_dot_new, q_dot_prev):
-        dt = 1.0 / self.control_rate
-        max_delta = self.max_joint_acceleration * dt
-        delta = q_dot_new - q_dot_prev
-        delta_clipped = np.clip(delta, -max_delta, max_delta)
-        return q_dot_prev + delta_clipped
-    
-        
-    def cap_joint_acceleration(self, q_dot_new, q_dot_prev):
-        dt = 1.0 / self.control_rate
-        max_delta = self.max_joint_acceleration * dt
-
-        delta = q_dot_new - q_dot_prev
-        delta_norm = np.linalg.norm(delta)
-
-        if delta_norm > max_delta:
-            delta = delta / delta_norm * max_delta  # scale uniformly to preserve direction
-
-        return q_dot_prev + delta
-    """
     def cap_joint_acceleration(self, q_dot_new, q_dot_prev):
         dt = 1.0 / self.control_rate
         delta = q_dot_new - q_dot_prev

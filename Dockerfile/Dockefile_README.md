@@ -69,6 +69,10 @@ roscore
 ```bash
 docker exec -it kinova_noetic bash
 ```
+and source:
+```bash
+source devel/setup.bash
+```
 then for test (with roscore up and running):
 ```bash
 rviz
