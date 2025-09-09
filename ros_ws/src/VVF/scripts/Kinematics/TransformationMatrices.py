@@ -1,4 +1,4 @@
-from constants import *
+from Kinematics.constants import *
 import math
 """
     "base_link" to "kinova_arm_base_link" : T_baselink_KinBaseLink

@@ -30,8 +30,11 @@ def forward_kinematics(joints):
     def extract_position_and_quaternion(T):
         position = T[:3, 3]  # Extract translation vector
         rotation_matrix = T[:3, :3]  # Extract rotation matrix
-        quaternion = R.from_matrix(rotation_matrix).as_quat()  # Convert to quaternion
-        return position, quaternion
+        try:
+            quat = R.from_matrix(rotation_matrix).as_quat()   # SciPy >= 1.4
+        except AttributeError:
+            quat = R.from_dcm(rotation_matrix).as_quat()      # SciPy < 1.4
+        return position, quat
 
     # Compute positions and quaternions for each frame
     frames = {

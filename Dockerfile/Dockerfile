@@ -58,10 +58,12 @@ RUN apt-get update && apt-get install -y \
     ros-noetic-velodyne-msgs ros-noetic-velodyne-pointcloud ros-noetic-velodyne-simulator \
     # Protobuf toolchain (needed by ros_kortex to generate *.pb.h)
     protobuf-compiler libprotobuf-dev libprotoc-dev python3-protobuf \
+    # tf2_sensor_msgs for obstacle processing
+    ros-noetic-tf2-sensor-msgs \
  && rm -rf /var/lib/apt/lists/*
 
 # ---- optional Python bits + Conan 1.x
-RUN apt-get update && apt-get install -y python3-pip python3-numpy \
+RUN apt-get update && apt-get install -y python3-pip python3-numpy python3-sympy python3-sklearn \
  && pip3 install --no-cache-dir numpy-stl "conan==1.59" \
  && rm -rf /var/lib/apt/lists/*
 
